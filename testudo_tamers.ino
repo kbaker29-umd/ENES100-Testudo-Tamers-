@@ -22,6 +22,7 @@
 #define ultra_trig 11
 #define ultra_echo_r 8 
 #define ultra_echo_l 12
+String InitPosition = "";
 
 // TODO Distance sensor pins
 // TODO Flame sensor pins
@@ -29,6 +30,7 @@
 /*
 * Function Prototypes (definitions)
 */
+// Navigation Functions
 
 // Drive Functions: take inputs from 0-100 (percent)
 void forward(int speed);
@@ -42,6 +44,7 @@ char get_geo(); // find out geography
 void extinguish(); // extinguish flames
 
 // TODO wifi chip functions
+
 
 void setup() 
 {
@@ -191,7 +194,7 @@ void extinguish()
 
 }
 //Takes robot from intial position to angle straight to objective, returns the starting position, either Top or Bottom Position
-String init_position(){
+void init_position(){
    float x = Enes100.getX();
    float y = Enes100.getY();
     float t = Enes100.getTheta();
@@ -208,7 +211,7 @@ String init_position(){
         Serial.println("Found it");
         //change when we know exact speed
         forward(50,3);
-        return ("Bottom Position");
+        InitPosition = ("Bottom Position");
         break;
         }
     }
@@ -225,11 +228,42 @@ String init_position(){
          Serial.println("Found it");
          //change when we know exact speed
          forward(50,3);
-         return ("Top Position");
+         InitPosition = ("Top Position");
          break;
         }
     }
 }
+}
+
+void navigation_path(){
+  if (InitPosition == "Bottom Position"){
+    right(50, 2);
+    //sensorcall;
+    //1if (sensorcall > 10){
+    forward(50,3);
+    //sensorcall;
+    //2if (sensorcall > 10){
+    forward(50,3);
+    right(50, 2);
+    forward(50,3);
+    left(50, 2);
+    forward(50,3);
+    //2 else{
+     right(50, 2);
+    forward(50,3);
+    left(50, 2);
+    //3if (sensorcall > 10){
+    forward(50,3);
+    right(50, 2);
+    forward(50,3);
+    left(50, 2);
+    forward(50,3);
+    //3else {
+      
+  } else {
+
+  }
+  
 }
 
 
