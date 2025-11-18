@@ -22,6 +22,8 @@
 #define ultra_trig 11
 #define ultra_echo_r 8 
 #define ultra_echo_l 12
+
+
 String InitPosition = "";
 
 // TODO Distance sensor pins
@@ -65,10 +67,18 @@ void setup()
 
 void loop() {
   // put your main code here, to run repeatedly:
-  forward(50,1);
+  init_position();
   delay(1000);
-  forward(0,1);
+  Enes100.println(get_geo());
   delay(1000);
+  //line below is for testing only, getflames also activates during extinguish
+  Enes100.println(get_flames());
+  delay(1000);
+  extinguish();
+  delay(1000);
+  navigation_path();
+  //terrible way to temporarily stop, but technically does the job
+  delay(100000);
 
 }
 
@@ -128,9 +138,34 @@ void right(int speed, float time)
 
 int get_flames()
 {
-  int flames = 0; //# of flames
+  int flame_num=1;
+   // Read the analog value from the sensor, would do a loop and a list but that takes too long in C++
+  if (((analogRead(0)*(5.0 / 1023.0))-0.5)>=25){
+    flame_num+=1;
+  } if (((analogRead(1)*(5.0 / 1023.0))-0.5)>=25){
+    flame_num+=1;
+  } if (((analogRead(2)*(5.0 / 1023.0))-0.5)>=25){
+    flame_num+=1;
+  } if (((analogRead(3)*(5.0 / 1023.0))-0.5)>=25){
+    flame_num+=1;
+  }
+  // Convert the analog value to voltage
+  // Assuming a 5V Arduino and the sensor output is 0-5V, and a resolution of 1024 (10-bit ADC)
+  // If you are using a different voltage (e.g., 3.3V), change the 5.0 to 3.3
+  //float voltage = analogValue * (5.0 / 1023.0);
+  // Convert the voltage to Celsius
+  // The formula depends on the specific sensor. For a TMP36, it is:
+  // tempC = (voltage - 0.5) * 100
+  // For other sensors, refer to its datasheet.
+  //float temperatureC = (voltage - 0.5) * 100;
+  // Convert Celsius to Fahrenheit (optional)
+  //float temperatureF = (temperatureC * 9.0 / 5.0) + 32.0;
+  // Print the temperature to the Serial Monitor
+ // Serial.print("Temperature: ");
+  //Serial.print(temperatureC);
+  //# of flames
   //use sensors to read flames
-  return flames;
+  return flame_num;
 }
 
 char get_geo()
@@ -182,7 +217,10 @@ void extinguish()
   digitalWrite(stamp_down, HIGH);
   delay(1000);
 
+  delay(10);
   Serial.print("Extingushing Flames...");
+  Enes100.println(get_flames());
+  delay(10);
   digitalWrite(stamp_down, LOW);
   delay(10);
 
@@ -235,36 +273,110 @@ void init_position(){
 }
 }
 
+
 void navigation_path(){
   if (InitPosition == "Bottom Position"){
-    right(50, 2);
+    right(50, 1);
+    float x = Enes100.getX();
+    while (x<3.3){
+      forward(50,3);
+      //while sensorcall false
+      right(50,1);
+      forward(50,3);
+      left(50,1);
+      //sensorcall}
+    }
+      float y = Enes100.getY();
+      if (y>1.2){
+        right(50,1);
+      forward(50,3);
+      left(50,1);
+      forward(50,2);
+      } else if (y>0.8){
+        right(50,1);
+      forward(50,2);
+      left(50,1);
+      forward(50,2);
+      } else {
+        right(50,1);
+      forward(50,2);
+      left(50,1);
+      forward(50,1);
+      }
+  }
+    else {
+    left(50, 1);
+    float x = Enes100.getX();
+    while (x<3.3){
+      forward(50,3);
+      //while sensorcall false
+      left(50,1);
+      forward(50,3);
+      right(50,1);
+      //sensorcall}
+    }
+      float y = Enes100.getY();
+      if (y>1.2){
+        left(50,1);
+      forward(50,3);
+      right(50,1);
+      forward(50,2);
+      } else if (y>0.8){
+        left(50,1);
+      forward(50,2);
+      right(50,1);
+      forward(50,2);
+      } else {
+        left(50,1);
+      forward(50,2);
+      right(50,1);
+      forward(50,1);
+      }
+    }
+    }
+
+    
     //sensorcall;
     //1if (sensorcall > 10){
-    forward(50,3);
+    //forward(50,3);
     //sensorcall;
-    //2if (sensorcall > 10){
-    forward(50,3);
-    right(50, 2);
-    forward(50,3);
-    left(50, 2);
-    forward(50,3);
-    //2 else{
-     right(50, 2);
-    forward(50,3);
-    left(50, 2);
-    //3if (sensorcall > 10){
-    forward(50,3);
-    right(50, 2);
-    forward(50,3);
-    left(50, 2);
-    forward(50,3);
-    //3else {
-      
-  } else {
-
-  }
-  
-}
+    //2aif (sensorcall > 10){
+    //forward(50,3);
+    //right(50, 1);
+    //forward(50,3);
+    //left(50, 1);
+    //forward(50,3);
+    //2a else{
+     //right(50, 1);
+    //forward(50,1);
+    //left(50, 1);
+    //3aif (sensorcall > 10){
+    //forward(50,3);
+    //right(50, 1);
+    //forward(50,1);
+    //left(50, 1);
+    //forward(50,3);
+    //3aelse {
+    //right(50, 1);
+    //forward(50,1);
+    //left(50, 1);
+    //forward(50,4);
+    //} 1else {
+    //right(50, 1);
+    //forward(50,1);
+    //left(50, 1);
+    //2b if (sensorcall > 10){
+    //forward(50,3);
+    //3b if (sensorcall > 10){
+    //forward(50,3);
+    //right(50, 1);
+    //forward(50,1);
+    //left(50, 1);
+    //forward(50,3); 
+    //2a else{
+    //right(50, 1);
+    //forward(50,3);
+    //left(50, 1);
 
 
 
