@@ -68,15 +68,15 @@ void setup()
 void loop() {
   // put your main code here, to run repeatedly:
   init_position();
-  delay(1000);
-  Enes100.println(get_geo());
-  delay(1000);
+  //delay(1000);
+  //Enes100.println(get_geo());
+  //delay(1000);
   //line below is for testing only, getflames also activates during extinguish
-  Enes100.println(get_flames());
-  delay(1000);
-  extinguish();
-  delay(1000);
-  navigation_path();
+  //Enes100.println(get_flames());
+  //delay(1000);
+  //extinguish();
+  //delay(1000);
+  //navigation_path();
   //terrible way to temporarily stop, but technically does the job
   delay(100000);
 
@@ -168,6 +168,20 @@ int get_flames()
   return flame_num;
 }
 
+float get_distance(){
+  float ultra1, ultra2, distance;
+  digitalWrite(ultra_trig, LOW);
+  delayMicroseconds(10);
+  digitalWrite(ultra_trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(ultra_trig, LOW);
+  ultra1 = pulseIn(ultra_echo_l, HIGH);
+  ultra2 = pulseIn(ultra_echo_r, HIGH);
+  distance = (ultra1+ultra2)/2;
+  return distance;
+
+}
+
 char get_geo()
 {
   char geo; 
@@ -239,8 +253,8 @@ void init_position(){
     //if starting at the bottom position, turn to roughly 90 CCW and output Bottom Position
     if (y<1.0){
     while (t<1.54 | t>1.63){
-      analogWrite(l_motor_for, 50);
-      analogWrite(r_motor_rev, 50);
+      analogWrite(l_motor_for, 75);
+      analogWrite(r_motor_rev, 75);
         float t = Enes100.getTheta();
         Serial.println(t);
         if (t>1.54 && t<1.60){
@@ -316,6 +330,7 @@ void navigation_path(){
       //sensorcall}
     }
       float y = Enes100.getY();
+      //jack fix for endzone
       if (y>1.2){
         left(50,1);
       forward(50,3);
