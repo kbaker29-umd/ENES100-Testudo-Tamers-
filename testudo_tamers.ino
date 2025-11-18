@@ -294,11 +294,11 @@ void navigation_path(){
     float x = Enes100.getX();
     while (x<3.3){
       forward(50,3);
-      //while sensorcall false
+      while (get_distance()<6){
       right(50,1);
       forward(50,3);
       left(50,1);
-      //sensorcall}
+      }
     }
       float y = Enes100.getY();
       if (y>1.2){
@@ -311,11 +311,8 @@ void navigation_path(){
       forward(50,2);
       left(50,1);
       forward(50,2);
-      } else {
-        right(50,1);
-      forward(50,2);
-      left(50,1);
-      forward(50,1);
+      } else { 
+      forward(50,3);
       }
   }
     else {
@@ -323,29 +320,28 @@ void navigation_path(){
     float x = Enes100.getX();
     while (x<3.3){
       forward(50,3);
-      //while sensorcall false
+      //might be wrong formatting
+      while (get_distance()<6){
       left(50,1);
       forward(50,3);
       right(50,1);
-      //sensorcall}
+      get_distance();
+      }
     }
       float y = Enes100.getY();
       //jack fix for endzone
       if (y>1.2){
-        left(50,1);
-      forward(50,3);
       right(50,1);
+      forward(50,3);
+      left(50,1);
       forward(50,2);
       } else if (y>0.8){
-        left(50,1);
-      forward(50,2);
       right(50,1);
+      forward(50,2);
+      left(50,1);
       forward(50,2);
       } else {
-        left(50,1);
-      forward(50,2);
-      right(50,1);
-      forward(50,1);
+      forward(50,3);
       }
     }
     }
